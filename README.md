@@ -12,7 +12,7 @@ ___° Variadades de variáveis de entradas do rótulo principal:___
 local NGC = "Coloque o diretório do 'Framework' aqui.";
 
 
-local Service = NGC.Create{
+local Service = NGC.CreateService{
 
     -- Dados principais por primeiro:
 
@@ -56,7 +56,7 @@ Service:DeferLive{Date = {Second, Minute, Hour, Day, ...}}
 local NGC = "Coloque o diretório do 'Framework' aqui.";
 
 
-local Usufruidor = NGC.Create{
+local Usufruidor = NGC.CreateUsufruidor{
 
     -- Dados principais por primeiro:
 
