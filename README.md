@@ -27,6 +27,25 @@ local Service = NGC.Create{
 
 }
 
+function Service:Running()
+    -- #Correrá antes do jogo (Pré-processamento).
+end
+
+function Service:AfterRunning()
+    -- #Correrá quando o jogo começar (Pós-processamento).
+end
+
+--[[ Pré-lançamento
+
+   Abaixo temos uma função que irá ser acionada de formato tabela.
+
+    Praticamente você dará uma função que você quer que aconteça, e em tal data
+    a sua função será acionada, de forma que todos os servidores vejam um "Evento ao vivo" por assim dizer.
+
+
+--]]
+
+Service:DeferLive{Date = {Second, Minute, Hour, Day, ...}}
 
 ```
 
@@ -49,6 +68,26 @@ local Usufruidor = NGC.Create{
     -- None variables...
 
 }
+
+function Usufruidor:Running()
+    -- #Correrá antes do jogo (Pré-processamento).
+end
+
+function Usufruidor:AfterRunning()
+    -- #Correrá quando o jogo começar (Pós-processamento).
+end
+
+--[[ Pré-lançamento
+
+   Abaixo temos uma função que irá ser acionada de formato tabela.
+
+    Praticamente você dará uma função que você quer que aconteça, e em tal data
+    a sua função será acionada, de forma que todos os servidores vejam um "Evento ao vivo" por assim dizer.
+
+
+--]]
+
+Service:DeferLive{Date = {Second, Minute, Hour, Day, ...}}
 
 
 ```
