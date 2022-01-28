@@ -1,4 +1,4 @@
-                    #           **_NGC - Framework_**
+#                             **_NGC - Framework_**
 _______________________________________________________________________________________
 
 ___° Variadades de variáveis de entradas do rótulo principal:___
