@@ -139,4 +139,19 @@ ________________________________________________________________________________
 # _Como funciona a função Singleton?_
   
   A função "GetSingleton" é utilizada para acessar diferentes usufruidores/serviços dentre um deles. Tanto o _Serviço_ pode acessar os _Usufruidores_ quanto o _Usufruidor_ no _Serviço_.
-  De forma lógica acessar um "Serviço" através de um Usufruidor pode expor os dados do servidor, então é por isso que existe uma função chamada "entryBlocking" (Veja mais em: \\)
+  De forma lógica acessar um "Serviço" através de um Usufruidor pode expor os dados do servidor, então é por isso que existe uma função chamada "entryBlocking" (Veja mais em: Variadades de variáveis de entradas do rótulo principal) para bloquear a entrada do Cliente ao Servidor.
+
+# _Como acessar um Singleton de ambos os lados (Servidor/Cliente):_
+
+```lua
+    local Service --[[Aqui é uma variavél de onde vamos acessar o 'Index' de um Singleton]], Warn --[[Note que o 'Warn' é só para obter uma função chamada '__conclude', que significa que a função vai tirar uma conclusão e ver se foi lida até o final e não vai verificar tantos erros, por tanto, muitos erros podem ser resolvidos assim ]] = NGC:GetSingleton("Ponha o nome do serviço que você quer procurar", {Entry = "Coloque o lado de qual você quer acessar (Usufruidores/Services)"} --[[Uso obrigatório desta tabela]])
+
+	Warn.__conclude(print) --[[
+
+        Acima veremos uma função chamada '__conclude', entre parênteses adicione o tipo de entrada que você quer que ela saia no fluxo de saída (Debugging).
+
+        [Verificação de linha por linha garantido];
+
+    ]]
+
+```
