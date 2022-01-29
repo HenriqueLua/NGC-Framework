@@ -1,3 +1,13 @@
+--[[
+   
+   Framework-Documentation https://github.com/HenriqueLua/NGC-Framework;
+   Creator: Henrique/NGC7380;
+   Date: 27/01/2021.
+   
+   Framework Copyright License Atribuite © 2022 !
+   
+]]
+
 type Framework = {
 	Services : Folder;
 	Usufruidores: Folder;
@@ -5,6 +15,7 @@ type Framework = {
 
 type Packets = {
 	Promise : ModuleScript? | any;
+	TableUtil : ModuleScript? | amy;
 }
 
 local ModuleScript: ModuleScript = script
@@ -13,6 +24,7 @@ local RunService: RunService = game:GetService("RunService")
 
 local Packets: Packets = {
 	Promise = require(ModuleScript.Parent:WaitForChild("Packets").Promise);
+	TableUtil = require(ModuleScript.Parent:WaitForChild("Packets").TableUtil)
 } 
 
 local Framework: Framework = {
@@ -70,6 +82,13 @@ end
 
 
 function Framework:Create(Data: table)
+	
+	local Keys = Packets.TableUtil.Keys(Data)
+	
+	if (Keys[table.find(Keys, "Name")] ~= 'Name') then error("Error! Framework:Create(Data: table) Data.Name don't exist, or not is the first argument or not has renamed with name 'Name' at variable it!", 2) end
+	if (Keys[table.find(Keys, "StorageData")] ~= 'StorageData') then error("Error! Framework:Create(Data: table) Data.StorageData don't exist, or not is the first argument or not has renamed with name 'StorageData' at variable it!", 2) end
+	if (Keys[table.find(Keys, "Events")] ~= 'Events') then error("Error! Framework:Create(Data: table) Data.Events don't exist, or not is the first argument or not has renamed with name 'Events' at variable it!", 2) end
+	
 	Packets.Promise.new(function(resolve, onCancel, reject)
 		if (RunService:IsClient()) then
 			Packets.Promise.new(function(resolve, onCancel, reject)
@@ -160,6 +179,14 @@ function CreateSignal( NameSignal, NameEvent: string, NameIndex: string, Index: 
 	end):andThen(function( Signal, Type )
 		table.insert(DataUse.Events.EventsDeep, { [NameEvent] = {Instance = Signal, Type = Type} })
 	end)
+end
+
+function Framework:GetSingleton( Name: string, Additional )
+	if (RunService:IsClient()) then
+		local Service : any = nil;
+		for _, Services in ipairs(Framework.ServicesStorage) do if (Services.Name == Name) then Service = Services; end end
+		return Service
+	end
 end
 
 return Framework
