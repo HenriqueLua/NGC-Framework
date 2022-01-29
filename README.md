@@ -1,7 +1,7 @@
 #                             **_NGC - Framework_**
 _______________________________________________________________________________________
 
-___° Variadades de variáveis de entradas do rótulo principal:___
+# ___° Variadades de variáveis de entradas do rótulo principal:___
 
 (As funções abaixo serão somente utilizadas dentro das pontes: Usufruidores & Services) 
 
@@ -132,3 +132,11 @@ Events = {
 };
 
 ```
+
+##  **Acessando a parti do Singleton:**
+_______________________________________________________________________________________
+
+# _Como funciona a função Singleton?_
+  
+  A função "GetSingleton" é utilizada para acessar diferentes usufruidores/serviços dentre um deles. Tanto o _Serviço_ pode acessar os _Usufruidores_ quanto o _Usufruidor_ no _Serviço_.
+  De forma lógica acessar um "Serviço" através de um Usufruidor pode expor os dados do servidor, então é por isso que existe uma função chamada "entryBlocking" (Veja mais em: `# ___° Variadades de variáveis de entradas do rótulo principal:___`)

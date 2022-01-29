@@ -14,13 +14,21 @@ type Framework = {
 }
 
 type Packets = {
-	Promise : ModuleScript? | any;
-	TableUtil : ModuleScript? | amy;
+	Promise : ModuleScript | any;
+	TableUtil : ModuleScript | any;
+}
+
+type Messages = {
+	ErrorGrammatical : string;
 }
 
 local ModuleScript: ModuleScript = script
 
 local RunService: RunService = game:GetService("RunService")
+
+local Messages = {
+	ErrorGrammatical = "Error! Framework:%s(%s) Data.%s don't exist, or not is the first argument or not has renamed with name '%s' at variable it!";
+}
 
 local Packets: Packets = {
 	Promise = require(ModuleScript.Parent:WaitForChild("Packets").Promise);
@@ -70,12 +78,22 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 			local ListOfServices = { }
 			for _Index, Elements in pairs(Folder:GetChildren()) do table.insert(ListOfServices, Elements); initializationBridge(Elements) end
 			Framework.Services = ListOfServices --[Add services in table 'Services']
+			return {
+				__conclude = function()
+					warn("[Server] => Initiated successfully!")
+				end
+			}
 		end;
 		ConnectUsufruidores = function(Folder: Folder | Instance) 
 			assert(typeof(Folder) == "Instance", "Error! Folder (ConnectServices(Folder)) is not of type 'Folder'!")
 			local ListOfServices = { }
 			for _Index, Elements in pairs(Folder:GetChildren()) do table.insert(ListOfServices, Elements); initializationBridge(Elements) end
 			Framework.Usufruidores = ListOfServices --[Add services in table 'Usufruidores']
+			return {
+				__conclude = function()
+					warn("[Client] => Initiated successfully!")
+				end
+			}
 		end;
 	}
 end
@@ -181,12 +199,45 @@ function CreateSignal( NameSignal, NameEvent: string, NameIndex: string, Index: 
 	end)
 end
 
-function Framework:GetSingleton( Name: string, Additional )
-	if (RunService:IsClient()) then
-		local Service : any = nil;
-		for _, Services in ipairs(Framework.ServicesStorage) do if (Services.Name == Name) then Service = Services; end end
-		return Service
+function Framework:GetSingleton( Name: string, Additional: any )
+
+	local Keys = Packets.TableUtil.Keys(Additional)
+	if (Keys[table.find(Keys, "Entry")] ~= 'Entry') then error(string.format(Messages.ErrorGrammatical, "GetSingleton", "Additional", "Entry", "Entry"), 2) end
+
+	--[[ @Como usar o Additional 
+
+	    Use o "Additional" igual abaixo:
+
+		```lua
+
+		Additional = {
+			Entry: string = "Usufruidores" | "Services"
+		}
+
+		```
+
+	--]]
+
+	if (RunService:IsClient() and Additional.Entry == "Usufruidores") then
+		return self.UsufruidoresStorage[Name], {
+			__conclude = function( type_ )
+				type_("[GetSingleton]: successfully complete! [In Client]") 
+			end
+		};
+	elseif (RunService:IsClient() and Additional.Entry == ("Services")) then
+		-- #Devlopment
 	end
+
+	if (RunService:IsServer() and Additional.Entry == "Services") then
+		return self.ServicesStorage[Name], {
+			__conclude = function( type_ )
+				type_("[GetSingleton]: successfully complete! [In Server]") 
+			end
+		};
+	elseif (RunService:IsServer() and Additional.Entry == ("Usufruidores")) then
+		-- #Devlopment
+	end
+
 end
 
 return Framework
