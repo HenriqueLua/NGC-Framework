@@ -144,7 +144,7 @@ ________________________________________________________________________________
 # _Como acessar um Singleton de ambos os lados (Servidor/Cliente):_
 
 ```lua
-    local Service --[[Aqui é uma variavél de onde vamos acessar o 'Index' de um Singleton]], Warn --[[Note que o 'Warn' é só para obter uma função chamada '__conclude', que significa que a função vai tirar uma conclusão e ver se foi lida até o final e não vai verificar tantos erros, por tanto, muitos erros podem ser resolvidos assim ]] = NGC:GetSingleton("Ponha o nome do serviço que você quer procurar", {Entry = "Coloque o lado de qual você quer acessar (Usufruidores/Services)"} --[[Uso obrigatório desta tabela]])
+    local Service --[[Aqui é uma variavél de onde vamos acessar o 'Index' de um Singleton]], Warn --[[Note que o 'Warn' é só para obter uma função chamada '__conclude', que significa que a função vai tirar uma conclusão e ver se foi lida até o final e não vai verificar tantos erros, por tanto, muitos erros podem ser resolvidos assim ]] = NGC:GetSingleton("Ponha o nome do serviço/usufruidor que você quer procurar", {Entry = "Coloque o lado de qual você quer acessar (Usufruidores/Services)"} --[[Uso obrigatório desta tabela]])
 
 	Warn.__conclude(print) --[[
 
