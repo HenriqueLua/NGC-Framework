@@ -11,8 +11,9 @@ function TestingUFI:Running()
 end
 
 function TestingUFI:AfterRunning()
-    local TestingUFI, Warn = NGC:GetSingleton("TestingUFI", {Entry = "Usufruidores"})
+    local TesUFI, Warn = NGC:GetSingleton("TesUFI", {Entry = "Usufruidores"})
 	Warn.__conclude(print)
+    TesUFI.Events.EventsDeep[1]["BindableEvent"].Instance:Fire()
 end
 
 return TestingUFI

@@ -219,6 +219,7 @@ function Framework:GetSingleton( Name: string, Additional: any )
 	--]]
 
 	if (RunService:IsClient() and Additional.Entry == "Usufruidores") then
+		repeat RunService.Heartbeat:Wait() until (Packets.TableUtil.IsEmpty(self.UsufruidoresStorage) == false)
 		return self.UsufruidoresStorage[Name], {
 			__conclude = function( type_ )
 				type_("[GetSingleton]: successfully complete! [In Client]") 
@@ -229,6 +230,7 @@ function Framework:GetSingleton( Name: string, Additional: any )
 	end
 
 	if (RunService:IsServer() and Additional.Entry == "Services") then
+		repeat RunService.Heartbeat:Wait() until (Packets.TableUtil.IsEmpty(self.ServicesStorage) == false)
 		return self.ServicesStorage[Name], {
 			__conclude = function( type_ )
 				type_("[GetSingleton]: successfully complete! [In Server]") 
