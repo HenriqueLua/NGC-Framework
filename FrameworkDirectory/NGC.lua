@@ -25,6 +25,7 @@ type Messages = {
 local ModuleScript: ModuleScript = script
 
 local RunService: RunService = game:GetService("RunService")
+local Stats_: Stats = game:GetService("Stats")
 
 local Messages = {
 	ErrorGrammatical = "Error! Framework:%s(%s) Data.%s don't exist, or not is the first argument or not has renamed with name '%s' at variable it!";
@@ -48,11 +49,15 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 	local function initializationBridge(module: ModuleScript)
 
 		local module_ = require(module)
+		local Keys = Packets.TableUtil.Keys(module_)
 
 		-- #Running:
 
 		Packets.Promise.new(function(resolve, onCancel, reject)
-			if (RunService:IsServer()) then resolve("Server") elseif (RunService:IsClient()) then resolve("Client") end
+			if (not Keys[table.find(Keys, "Running")]) then warn("Error! Running not started... [Running Function: Don't exist!]") return end 
+			if (Stats_:GetTotalMemoryUsageMb( ) >= 0) then
+				if (RunService:IsServer()) then resolve("Server") elseif (RunService:IsClient()) then resolve("Client") end
+			end
 		end):andThen(function(Face)
 
 			module_:Running() -- [Start Running]
@@ -60,15 +65,32 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 			-- #AfterRunning:
 
 			Packets.Promise.new(function(resolve, onCancel, reject)
-				if (Face == "Client") then if (game:IsLoaded()) then resolve() elseif (not game:IsLoaded()) then game.Loaded:Wait() resolve() end
-				elseif (Face == "Server") then
-					resolve()
+				if (Keys[table.find(Keys, "AfterRunning")]) and (Stats_:GetTotalMemoryUsageMb() > 0) then
+					if (Face == "Client") then if (game:IsLoaded()) then resolve() elseif (not game:IsLoaded()) then game.Loaded:Wait() resolve() end
+				    elseif (Face == "Server") then
+						resolve()
+				    end
 				end
 			end):andThen(function()
 				module_:AfterRunning()
 			end)
 
 
+		end)
+
+		-- #RunningUpdate
+
+		Packets.Promise.new(function(resolve, onCancel, reject)
+			if (Keys[table.find(Keys, "RunningUpdate")]) then
+				if (RunService:IsClient()) or (RunService:IsServer()) then resolve() end
+			end
+		end):andThen(function()
+			local RunningUpdate = module_:RunningUpdate()
+			for Index = 1, #RunningUpdate do
+				RunService[RunningUpdate[Index].Style]:Connect(function(deltaTime: number)
+					RunningUpdate[Index].Occurrence(deltaTime);
+				end)
+			end
 		end)
 
 	end
@@ -241,5 +263,6 @@ function Framework:GetSingleton( Name: string, Additional: any )
 	end
 
 end
+
 
 return Framework
