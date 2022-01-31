@@ -82,7 +82,7 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 
 		Packets.Promise.new(function(resolve, onCancel, reject)
 			if (Keys[table.find(Keys, "RunningUpdate")]) then
-				if (RunService:IsClient()) or (RunService:IsServer()) then resolve() end
+				if (RunService:IsClient()) or (RunService:IsServer()) and (Packets.TableUtil.IsEmpty(module_:RunningUpdate()) == false) then resolve() end
 			end
 		end):andThen(function()
 			local RunningUpdate = module_:RunningUpdate()
