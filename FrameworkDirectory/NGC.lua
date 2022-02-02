@@ -13,7 +13,7 @@ type Framework = {
 	Usufruidores: Folder;
 }
 
-type Packets = {
+export type Packets = {
 	Promise : ModuleScript | any;
 	TableUtil : ModuleScript | any;
 }
@@ -85,12 +85,42 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 				if (RunService:IsClient()) or (RunService:IsServer()) and (Packets.TableUtil.IsEmpty(module_:RunningUpdate()) == false) then resolve() end
 			end
 		end):andThen(function()
+
+			local KeysStorageData = Packets.TableUtil.Keys(module_.StorageData)
+
+			if (not KeysStorageData[table.find(Keys, "Updaters")]) then module_.StorageData.Updaters = { } end 
+
+			local Updaters: {[any | string]: any | string} = module_.StorageData.Updaters;
+
 			local RunningUpdate = module_:RunningUpdate()
 			for Index = 1, #RunningUpdate do
-				RunService[RunningUpdate[Index].Style]:Connect(function(deltaTime: number)
-					RunningUpdate[Index].Occurrence(deltaTime);
-				end)
+				
+				local Bind = function()
+					return RunService[RunningUpdate[Index].Style]:Connect(function(deltaTime: number)
+						RunningUpdate[Index].Occurrence(deltaTime);
+					end)	
+				end
+
+				local RunningNow = Bind()
+
+				local function Disconnect(Function_): RBXScriptConnection | any
+					Function_:Disconnect()
+				end
+	
+				local function Connect(Function_): RBXScriptConnection | any
+					RunningNow = Function_()
+				end
+				
+				Updaters[RunningUpdate[Index].Name] = { isRunning = function(isRunning: boolean)
+					if (isRunning) then
+						Connect(Bind)
+					elseif (not isRunning) then
+						Disconnect(RunningNow)
+					end
+				end }
+
 			end
+
 		end)
 
 	end
@@ -178,15 +208,11 @@ function Framework:Create(Data: table)
 end
 
 --[[
-
 CreateSignal:
-
   	Events = {
 		Example = { "Nome do seu evento (Example)", "BindableEvent" (Tipo do evento), 
 		"Service" (Nome do Usufruidor/Serviço), script (Coloque o seu index/ModuleScript aqui) }
 	};
-
-
 ]]
 
 function CreateSignal( NameSignal, NameEvent: string, NameIndex: string, Index: ModuleScript, DataUse )
@@ -227,17 +253,12 @@ function Framework:GetSingleton( Name: string, Additional: any )
 	if (Keys[table.find(Keys, "Entry")] ~= 'Entry') then error(string.format(Messages.ErrorGrammatical, "GetSingleton", "Additional", "Entry", "Entry"), 2) end
 
 	--[[ @Como usar o Additional 
-
 	    Use o "Additional" igual abaixo:
-
 		```lua
-
 		Additional = {
 			Entry: string = "Usufruidores" | "Services"
 		}
-
 		```
-
 	--]]
 
 	if (RunService:IsClient() and Additional.Entry == "Usufruidores") then
