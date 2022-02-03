@@ -290,11 +290,12 @@ end
 function Framework:DeferLive(...)
 	if (RunService:IsServer() or RunService:IsClient()) then
 
-		local Year, Month, Day, Week, Hour, Minute, Language, NameEvent, Event = table.unpack(...)
-
+		local Year, Month, Day, Week, Hour, Minute, Seconds, Language, NameEvent, Event, StateFinal = table.unpack(...)
+		local StartedNow: boolean = false;
+		
 		local Runner = RunService.Heartbeat:Connect(function()
 			local Timetamp = DateTime.now()
-
+			
 			local Formating = {
 				Year = Timetamp:FormatLocalTime('YYYY', Language);
 				Month = Timetamp:FormatLocalTime('M', Language);
@@ -302,15 +303,19 @@ function Framework:DeferLive(...)
 				["Day of Week"] = Timetamp:FormatLocalTime('dddd', Language);
 				Hour = Timetamp:FormatLocalTime('HH', Language);
 				Minute = Timetamp:FormatLocalTime('mm', Language);
+				Seconds = Timetamp:FormatLocalTime('s', Language);
 			}
 
-			if ((Year == Formating.Year) and (Month == Formating.Month) and (Day == Formating["Day of Month"]) and (Week == Formating["Day of Week"]) and (Hour == Formating.Hour) and (Minute == Formating.Minute)) == true then
-				Event(Framework.Server.LiveEvents[NameEvent]);
+			if ((Year == Formating.Year) and (Month == Formating.Month) and (Day == Formating["Day of Month"]) and (Week == Formating["Day of Week"]) and (Hour == Formating.Hour) and (Minute == Formating.Minute) and (Seconds == Formating.Seconds)) == true then
+				if (not StartedNow) then StartedNow = true; Event(Framework.Server.LiveEvents[NameEvent]); end
+			elseif (Formating.Year >= Year) and (Formating.Month >= Month) and (Formating["Day of Month"] >= Day) and (Formating["Day of Week"] >= Week) and (Formating.Hour >= Hour) and (Formating.Minute >= Minute) and (Formating.Seconds >= Seconds) and (StartedNow == false) then
+				StateFinal(Framework.Server.LiveEvents[NameEvent]);
 			end
+
 		end)
-	
-		Framework.Server.LiveEvents[NameEvent] = Runner;
 		
+		Framework.Server.LiveEvents[NameEvent] = Runner;
+
 	end
 end
 
