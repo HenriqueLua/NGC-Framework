@@ -43,6 +43,8 @@ local Framework: Framework = {
 	Services = {}; ServicesStorage = {};
 	Usufruidores = {}; UsufruidoresStorage = {};
 
+	Server = {LiveEvents = {  }};
+
 }
 
 function Framework:ConnectBridge( ): RBXScriptSignal?
@@ -285,5 +287,31 @@ function Framework:GetSingleton( Name: string, Additional: any )
 
 end
 
+function Framework:DeferLive(...)
+	if (RunService:IsServer() or RunService:IsClient()) then
+
+		local Year, Month, Day, Week, Hour, Minute, Language, NameEvent, Event = table.unpack(...)
+
+		local Runner = RunService.Heartbeat:Connect(function()
+			local Timetamp = DateTime.now()
+
+			local Formating = {
+				Year = Timetamp:FormatLocalTime('YYYY', Language);
+				Month = Timetamp:FormatLocalTime('M', Language);
+				["Day of Month"] = Timetamp:FormatLocalTime('D', Language);
+				["Day of Week"] = Timetamp:FormatLocalTime('dddd', Language);
+				Hour = Timetamp:FormatLocalTime('HH', Language);
+				Minute = Timetamp:FormatLocalTime('mm', Language);
+			}
+
+			if ((Year == Formating.Year) and (Month == Formating.Month) and (Day == Formating["Day of Month"]) and (Week == Formating["Day of Week"]) and (Hour == Formating.Hour) and (Minute == Formating.Minute)) == true then
+				Event(Framework.Server.LiveEvents[NameEvent]);
+			end
+		end)
+	
+		Framework.Server.LiveEvents[NameEvent] = Runner;
+		
+	end
+end
 
 return Framework
