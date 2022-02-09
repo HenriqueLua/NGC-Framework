@@ -8,7 +8,7 @@
         "$path": "src/shared"
       },
       "NGC": {
-        "$path": "FrameworkDirectory/NGC.lua"
+        "$path": "FrameworkDirectory/NGC"
       },
       "Packets": {
         "$path": "Packets"
