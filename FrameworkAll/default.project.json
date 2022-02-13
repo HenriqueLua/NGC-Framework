@@ -6,6 +6,12 @@
     "ReplicatedStorage": {
       "Common": {
         "$path": "src/shared"
+      },
+      "NGC": {
+        "$path": "FrameworkDirectory/NGC"
+      },
+      "Packets": {
+        "$path": "Packets"
       }
     },
 

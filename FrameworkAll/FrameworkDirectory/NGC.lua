@@ -1,11 +1,11 @@
 --[[
-   
+
    Framework-Documentation https://github.com/HenriqueLua/NGC-Framework;
    Creator: Henrique/NGC7380;
    Date: 27/01/2021.
-   
+
    Framework Copyright License Atribuite © 2022 !
-   
+
 ]]
 
 type Framework = {
@@ -25,6 +25,7 @@ type Messages = {
 local ModuleScript: ModuleScript = script
 
 local RunService: RunService = game:GetService("RunService")
+local ServerStorage: ServerStorage = game:GetService("ServerStorage");
 local Stats_: Stats = game:GetService("Stats")
 
 local Messages = {
@@ -34,7 +35,7 @@ local Messages = {
 local Packets: Packets = {
 	Promise = require(ModuleScript.Parent:WaitForChild("Packets").Promise);
 	TableUtil = require(ModuleScript.Parent:WaitForChild("Packets").TableUtil)
-} 
+}
 
 local Framework: Framework = {
 
@@ -56,7 +57,7 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 		-- #Running:
 
 		Packets.Promise.new(function(resolve, onCancel, reject)
-			if (not Keys[table.find(Keys, "Running")]) then warn("Error! Running not started... [Running Function: Don't exist!]") return end 
+			if (not Keys[table.find(Keys, "Running")]) then warn("Error! Running not started... [Running Function: Don't exist!]") return end
 			if (Stats_:GetTotalMemoryUsageMb( ) >= 0) then
 				if (RunService:IsServer()) then resolve("Server") elseif (RunService:IsClient()) then resolve("Client") end
 			end
@@ -90,17 +91,17 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 
 			local KeysStorageData = Packets.TableUtil.Keys(module_.StorageData)
 
-			if (not KeysStorageData[table.find(Keys, "Updaters")]) then module_.StorageData.Updaters = { } end 
+			if (not KeysStorageData[table.find(Keys, "Updaters")]) then module_.StorageData.Updaters = { } end
 
 			local Updaters: {[any | string]: any | string} = module_.StorageData.Updaters;
 
 			local RunningUpdate = module_:RunningUpdate()
 			for Index = 1, #RunningUpdate do
-				
+
 				local Bind = function()
 					return RunService[RunningUpdate[Index].Style]:Connect(function(deltaTime: number)
 						RunningUpdate[Index].Occurrence(deltaTime);
-					end)	
+					end)
 				end
 
 				local RunningNow = Bind()
@@ -108,11 +109,11 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 				local function Disconnect(Function_): RBXScriptConnection | any
 					Function_:Disconnect()
 				end
-	
+
 				local function Connect(Function_): RBXScriptConnection | any
 					RunningNow = Function_()
 				end
-				
+
 				Updaters[RunningUpdate[Index].Name] = { isRunning = function(isRunning: boolean)
 					if (isRunning) then
 						Connect(Bind)
@@ -127,7 +128,7 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 
 	end
 	return {
-		ConnectServices = function(Folder: Folder | Instance) 
+		ConnectServices = function(Folder: Folder | Instance)
 			assert(typeof(Folder) == "Instance", "Error! Folder (ConnectServices(Folder)) is not of type 'Folder'!")
 			local ListOfServices = { }
 			for _Index, Elements in pairs(Folder:GetChildren()) do table.insert(ListOfServices, Elements); initializationBridge(Elements) end
@@ -138,7 +139,7 @@ function Framework:ConnectBridge( ): RBXScriptSignal?
 				end
 			}
 		end;
-		ConnectUsufruidores = function(Folder: Folder | Instance) 
+		ConnectUsufruidores = function(Folder: Folder | Instance)
 			assert(typeof(Folder) == "Instance", "Error! Folder (ConnectServices(Folder)) is not of type 'Folder'!")
 			local ListOfServices = { }
 			for _Index, Elements in pairs(Folder:GetChildren()) do table.insert(ListOfServices, Elements); initializationBridge(Elements) end
@@ -154,13 +155,13 @@ end
 
 
 function Framework:Create(Data: table)
-	
+
 	local Keys = Packets.TableUtil.Keys(Data)
-	
+
 	if (Keys[table.find(Keys, "Name")] ~= 'Name') then error("Error! Framework:Create(Data: table) Data.Name don't exist, or not is the first argument or not has renamed with name 'Name' at variable it!", 2) end
 	if (Keys[table.find(Keys, "StorageData")] ~= 'StorageData') then error("Error! Framework:Create(Data: table) Data.StorageData don't exist, or not is the first argument or not has renamed with name 'StorageData' at variable it!", 2) end
 	if (Keys[table.find(Keys, "Events")] ~= 'Events') then error("Error! Framework:Create(Data: table) Data.Events don't exist, or not is the first argument or not has renamed with name 'Events' at variable it!", 2) end
-	
+
 	Packets.Promise.new(function(resolve, onCancel, reject)
 		if (RunService:IsClient()) then
 			Packets.Promise.new(function(resolve, onCancel, reject)
@@ -170,17 +171,17 @@ function Framework:Create(Data: table)
 					resolve(false)
 				end
 			end):andThen(function(Entry: boolean)
-				if (Entry) then  
+				if (Entry) then
 
 					Framework.UsufruidoresStorage[Data.Name] = { Name = Data.Name, StorageData = Data.StorageData, Events = Data.Events }
-					
+
 					local DataUse = Framework.UsufruidoresStorage[Data.Name]
 
 					for Index = 1, #DataUse.Events do
 						local Signal = DataUse.Events[Index]
 						CreateSignal(Signal[1], Signal[2], Signal[3], Signal[4], DataUse)
 					end
-					
+
 				elseif (not Entry) then error("'Entry > true'expected, but, is 'false'! [Usufruidores List do not loaded!]") end
 			end)
 		elseif (RunService:IsServer()) then
@@ -191,17 +192,17 @@ function Framework:Create(Data: table)
 					resolve(false)
 				end
 			end):andThen(function(Entry: boolean)
-				if (Entry) then  
+				if (Entry) then
 
 					Framework.ServicesStorage[Data.Name] = {Name = Data.Name, StorageData = Data.StorageData, Events = Data.Events}
-					
+
 					local DataUse = Framework.ServicesStorage[Data.Name]
-					
+
 					for Index = 1, #DataUse.Events do
 						local Signal = DataUse.Events[Index]
 						CreateSignal(Signal[1], Signal[2], Signal[3], Signal[4], DataUse)
 					end
-					
+
 				elseif (not Entry) then error("'Entry > true'expected, but, is 'false'! [Services List do not loaded!]") end
 			end)
 		end
@@ -212,7 +213,7 @@ end
 --[[
 CreateSignal:
   	Events = {
-		Example = { "Nome do seu evento (Example)", "BindableEvent" (Tipo do evento), 
+		Example = { "Nome do seu evento (Example)", "BindableEvent" (Tipo do evento),
 		"Service" (Nome do Usufruidor/Serviço), script (Coloque o seu index/ModuleScript aqui) }
 	};
 ]]
@@ -220,7 +221,7 @@ CreateSignal:
 function CreateSignal( NameSignal, NameEvent: string, NameIndex: string, Index: ModuleScript, DataUse )
 	Packets.Promise.new(function(resolve, onCancel, reject)
 		local Signals: Folder, Name = Instance.new("Folder"), "Signals"
-		local SignalsTypes = { 
+		local SignalsTypes = {
 
 			-- [Events Types]
 
@@ -237,13 +238,13 @@ function CreateSignal( NameSignal, NameEvent: string, NameIndex: string, Index: 
 		if (not Index:FindFirstChild("Signals")) then Signals.Parent = (Index); Signals.Name = (Name) end
 
 		local Item = SignalsTypes[NameEvent]
-		local Signal, Type = Item.Instance:Clone(), Item.Type; 
+		local Signal, Type = Item.Instance:Clone(), Item.Type;
 
 		Signal.Parent = Index:WaitForChild(Name);
 		Signal.Name = NameSignal;
-		
+
 		resolve(Signal, Type)
-		
+
 	end):andThen(function( Signal, Type )
 		table.insert(DataUse.Events.EventsDeep, { [NameEvent] = {Instance = Signal, Type = Type} })
 	end)
@@ -254,7 +255,7 @@ function Framework:GetSingleton( Name: string, Additional: any )
 	local Keys = Packets.TableUtil.Keys(Additional)
 	if (Keys[table.find(Keys, "Entry")] ~= 'Entry') then error(string.format(Messages.ErrorGrammatical, "GetSingleton", "Additional", "Entry", "Entry"), 2) end
 
-	--[[ @Como usar o Additional 
+	--[[ @Como usar o Additional
 	    Use o "Additional" igual abaixo:
 		```lua
 		Additional = {
@@ -267,7 +268,7 @@ function Framework:GetSingleton( Name: string, Additional: any )
 		repeat RunService.Heartbeat:Wait() until (Packets.TableUtil.IsEmpty(self.UsufruidoresStorage) == false)
 		return self.UsufruidoresStorage[Name], {
 			__conclude = function( type_ )
-				type_("[GetSingleton]: successfully complete! [In Client]") 
+				type_("[GetSingleton]: successfully complete! [In Client]")
 			end
 		};
 	elseif (RunService:IsClient() and Additional.Entry == ("Services")) then
@@ -278,7 +279,7 @@ function Framework:GetSingleton( Name: string, Additional: any )
 		repeat RunService.Heartbeat:Wait() until (Packets.TableUtil.IsEmpty(self.ServicesStorage) == false)
 		return self.ServicesStorage[Name], {
 			__conclude = function( type_ )
-				type_("[GetSingleton]: successfully complete! [In Server]") 
+				type_("[GetSingleton]: successfully complete! [In Server]")
 			end
 		};
 	elseif (RunService:IsServer() and Additional.Entry == ("Usufruidores")) then
@@ -292,10 +293,10 @@ function Framework:DeferLive(...)
 
 		local Year, Month, Day, Week, Hour, Minute, Seconds, Language, NameEvent, Event, StateFinal = table.unpack(...)
 		local StartedNow: boolean = false;
-		
+
 		local Runner = RunService.Heartbeat:Connect(function()
 			local Timetamp = DateTime.now()
-			
+
 			local Formating = {
 				Year = Timetamp:FormatLocalTime('YYYY', Language);
 				Month = Timetamp:FormatLocalTime('M', Language);
@@ -313,10 +314,18 @@ function Framework:DeferLive(...)
 			end
 
 		end)
-		
+
 		Framework.Server.LiveEvents[NameEvent] = Runner;
 
 	end
+end
+
+function Framework.feeding ()
+	return {
+		banTemporary = function(Player: Player, Time: number)
+			local DataManager = require()
+		end
+	}
 end
 
 return Framework
